@@ -20,104 +20,76 @@ int main ()
         return 0;
     }
 
+    int escolha;
     arvB *raiz = criarNoRaizInicial();
-
-
-    int i;
 
     do
     {
-        printf ("\n1- INSERIR ATLETA");
-        printf ("\n2- REMOVER ATLETA");
-        printf ("\n3- IMPRIMIR BANCO DE DADOS");
-        printf ("\n4- BUSCAR ATLETA");
-        printf ("\n5- SAIR\n");
-        
-        printf ("\nInforme sua opcao: ");
-        scanf ("%d", &i);
+        escolha = menu();
 
-        switch (i)
+        switch (escolha)
         {
             int id_remover;
+            char clube_buscado[30];
+            char posicao_buscada[30];
             int id_buscado;
+            int overall_buscado;
             Registro *novo;
-            case 1:{
 
+            case 1:
                 novo = criarJogador();
-
-                raiz = insereArvoreB (raiz, novo);
-
+                raiz = insereArvoreB(raiz, novo);
                 break;
-            }
-            case 2:
-                printf ("\nInforme o id a ser removido do banco de dados: ");
-                scanf ("%d", &id_remover);
 
+            case 2:
+                printf("Informe o id a ser removido: ");
+                scanf("%d", &id_remover);
+                fflush(stdin);
                 raiz = remover(raiz, id_remover);
-            break;
+                break;
 
             case 3:
-                imprimir_informacoes_basicas (raiz);
-            break;
+                imprimir_informacoes_basicas(raiz);
+                break;
 
             case 4:
                 printf ("\nInforme o id a ser buscado no banco de dados: ");
                 scanf ("%d", &id_buscado);
-
-                arvB *arv = buscarArv(raiz, id_buscado);
-
-                if (arv != NULL)
-                {
-                    int i = 0;
-
-                    while (i < arv->n && arv->regs[i]->id != id_buscado)
-                    {
-                        i++;
-                    }
-
-                    if (arv->regs[i] != NULL)
-                    {
-                        printf("\n--- Informações do Atleta ---\n");
-                        printf("ID: %d\n", arv->regs[i]->id);
-                        printf("CPF: %d\n", arv->regs[i]->cpf);
-                        printf("Nome: %s\n", arv->regs[i]->nome);
-                        printf("Lesionado: %s\n", arv->regs[i]->infos->isLesionado ? "Sim" : "Não");
-                        printf("Perna Boa: %s\n", arv->regs[i]->infos->pernaBoa ? "Esquerda" : "Direita");
-                        printf("Finta: %d\n", arv->regs[i]->infos->finta);
-                        printf("Ritmo: %d\n", arv->regs[i]->infos->pace);
-                        printf("Passe: %d\n", arv->regs[i]->infos->pas);
-                        printf("Fisico: %d\n", arv->regs[i]->infos->fisico);
-                        printf("Finalizacao: %d\n", arv->regs[i]->infos->finalizacao);
-                        printf ("Overral: %d\n", (arv->regs[i]->infos->finta + arv->regs[i]->infos->pace + arv->regs[i]->infos->pas +
-                                                         arv->regs[i]->infos->fisico + arv->regs[i]->infos->finalizacao) / 5);
-                        printf("Defesa: %d\n", arv->regs[i]->infos->defesa);
-                        printf("Clube: %s\n", arv->regs[i]->infos->clube);
-                        printf("Posição: %s\n", arv->regs[i]->infos->posicao);
-                        printf("-----------------------------\n");
-                        
-                        printf ("\n");
-                    }
-                
-                }
-                else
-                {
-                    printf ("\nAtleta nao encontrado");
-                }
-
-            break;
+                fflush(stdin);
+                imprimir_jogador_por_id(raiz, id_buscado);
+                break;
 
             case 5:
-                printf ("\nSAINDO DO BANCO DE DADOS");
-                return 0;
-            break;
+                printf("Digite o nome do Clube: ");
+                scanf("%s", clube_buscado);
+                fflush(stdin);
+                imprimir_atletas_por_clube(raiz, clube_buscado);
+                break;
+
+            case 6:
+                printf("Digite a Posicao: ");
+                scanf("%s", posicao_buscada);
+                fflush(stdin);
+                imprimir_atletas_por_posicao(raiz, posicao_buscada);
+                break;
+
+            case 7:
+                printf("Digite o OVERALL minimo: ");
+                scanf("%d", &overall_buscado);
+                fflush(stdin);
+                imprimir_acima_de_overall(raiz, overall_buscado);
+                break;
+
+            case 10:
+                printf("SAINDO DO SISTEMA");
+                break;
 
             default:
-                printf ("\nEscolha outra opcao");
-            break;
-        }
+                printf("VALOR INVALIDO, DIGITE OUTRO!");
+                break;
+        } 
 
-
-    } while (i != 5);
+    } while (escolha != 10);
     
 
 

@@ -97,14 +97,15 @@ char *posicoes[11] = {
 
 typedef struct {
 
-    int isLesionado;   // está lesionado? (0 - não lesionado | 1 - lesionado)
+    int isLesionado;    // está lesionado? (0 - não lesionado | 1 - lesionado)
     int pernaBoa;       // indica qual perna é a favorita (0 - esquerda | 1 - direita)
-    int finta;        // nota da finta        (0 a 99)
-    int pace;         // nota do pace/ritmo   (0 a 99)
-    int pas;          // nota do passe        (0 a 99)
-    int defesa;       // nota da defesa        (0 a 99)
-    int fisico;       // nota do fisico        (0 a 99)
-    int finalizacao;
+    int finta;          // nota da finta        (0 a 99)
+    int pace;           // nota do pace/ritmo   (0 a 99)
+    int pas;            // nota do passe        (0 a 99)
+    int defesa;         // nota da defesa        (0 a 99)
+    int fisico;         // nota do fisico        (0 a 99)
+    int finalizacao;    // nota da finalizacao
+    int overall;        // media inteira das outras notas
     char clube[50];     // nome do clube        
     char posicao[50];   // nome da posicao      
 
@@ -128,5 +129,34 @@ typedef struct no{
     struct no **filho;
 
 } arvB;
+
+//FUNCAO DE BUSCA
+arvB* buscarArv (arvB *r, int k);
+
+//FUNCOES UTILIZADAS NA INSERCAO
+arvB* criarNoRaizInicial();
+arvB* insereArvoreB(arvB *r, Registro *k);
+void insereNaoCheioArvoreB(arvB *x, Registro *k);
+void splitChildArvoreB (arvB *x, int i);
+
+//FUNCOES UTILIZADAS NA REMOCAO
+arvB* remover(arvB *raiz, int k);
+void remover_rec (arvB *x, int k);
+void mergeChildArvoreB (arvB *x, int i);
+
+//FUNCOES DE IMPRESSAO
+void imprimir_informacoes_basicas(arvB *raiz);
+void imprimir_acima_de_overall(arvB *raiz, int overall);
+void imprimir_atletas_por_posicao(arvB *raiz, char posicao[]);
+void imprimir_atletas_por_clube(arvB *raiz, char clube[]);
+void imprimir_jogador_por_id(arvB* raiz, int id_buscado);
+void imprimir_jogador(Registro* regs);
+
+//FUNCOES DA MAIN
+int menu();
+
+//FUNCOES CRIACAO DE JOGADOR
+void aleatorizarInformacoes(Registro *r);
+Registro* criarJogador();
 
 #endif

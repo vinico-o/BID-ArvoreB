@@ -18,6 +18,7 @@ void aleatorizarInformacoes(Registro *r)
     r->infos->defesa = rand() % 70 + 30;
     r->infos->fisico = rand() % 70 + 30;
     r->infos->finalizacao = rand() % 70 + 30;
+    r->infos->overall = (r->infos->finta + r->infos->pace + r->infos->pas + r->infos->fisico + r->infos->finalizacao) / 5;
 
     strcpy(r->infos->clube, timesSerieA[rand() % 20]);
     strcpy(r->infos->posicao, posicoes[rand() % 11]);
@@ -31,10 +32,10 @@ Registro* criarJogador()
     id++;
 
     reg->cpf = rand() % 1000000;
-
     strcpy(reg->nome, titulares[rand() % 20][rand() % 11]);
-
     aleatorizarInformacoes(reg);
+    printf("JOGADOR INSERIDO COM SUCESSO!");
+    imprimir_jogador(reg);
 
     return reg;
 }
@@ -49,7 +50,6 @@ arvB* criarNoRaizInicial()
     novoNo->n = 0;
     novoNo->folha = true;
 
-
     for (int i = 0; i < 2*t - 1; i++)
     {
         novoNo->regs[i] = NULL;
@@ -59,7 +59,6 @@ arvB* criarNoRaizInicial()
     {
         novoNo->filho[i] = NULL;
     }
-
 
     return novoNo;
 }
@@ -73,7 +72,6 @@ arvB* buscarArv (arvB *r, int k)
     {
         i++;
     }
-
     
     if (i < r->n && k == r->regs[i]->id)
     {
@@ -91,8 +89,6 @@ arvB* buscarArv (arvB *r, int k)
         return buscarArv (r->filho[i], k);
     }
 }
-
-
 
 void splitChildArvoreB (arvB *x, int i) // função de split -> recebe o nó pai e o índice do filho que será dividido
 {
@@ -232,71 +228,87 @@ arvB* insereArvoreB(arvB *r, Registro *k)  // função de inserir
     }
 }
 
-
-
-
-void imprimir_arvore(arvB *arv, int nivel)
-{
-    if (arv != NULL)
-    {
-        printf ("\nnivel - %d  ", nivel);
-        printf ("n = %d   ", arv->n);
-        printf ("\n");
-        for (int i = 0; i < arv->n; i++)
-        {
-            printf ("| ");
-            printf ("id: %d ", arv->regs[i]->id);
-            printf ("cpf: %d ", arv->regs[i]->cpf);
-            printf ("nome: %s ", arv->regs[i]->nome);
-            printf ("esta lesionado? %d ", arv->regs[i]->infos->isLesionado);
-            printf ("perna boa? %d ", arv->regs[i]->infos->pernaBoa);
-            printf ("finta? %d ", arv->regs[i]->infos->finta);
-            printf ("pace? %d ", arv->regs[i]->infos->pace);
-            printf ("pas? %d ", arv->regs[i]->infos->pas);
-            printf ("defesa? %d ", arv->regs[i]->infos->defesa);
-            printf ("clube? %s ", arv->regs[i]->infos->clube);
-            printf ("posicao? %s ", arv->regs[i]->infos->posicao);
-            
-            printf (" |");
-            printf ("\n");
-        }
-
-        if (arv->folha == false)
-        {
-            for (int i = 0; i < arv->n + 1; i++)
-            {
-                if (arv->filho[i] != NULL)
-                {
-                    imprimir_arvore(arv->filho[i], nivel + 1);
-                }
-            }
-        }
-    }
-
-}
-
-void imprimir(arvB *raiz)
-{
-    printf ("\n\n\nIMPRIMINDO ARVORE-B\n");
-
-    imprimir_arvore(raiz, 0);
-}
-
 void imprimir_informacoes_basicas(arvB *raiz)
 {
     if (raiz != NULL)
     {
-        printf ("\n\n{");
+        printf ("\n\n|");
         for (int i = 0; i < raiz->n; i++)
         {
-            printf ("  [id : %d  nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
+            printf (" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
         }
 
-        printf ("}");
+        printf ("|");
 
         for (int i = 0; i < raiz->n + 1; i++)
         {
             imprimir_informacoes_basicas (raiz->filho[i]);
+        }
+    }
+}
+
+void imprimir_acima_de_overall(arvB *raiz, int overall)
+{
+    if (raiz != NULL)
+    {
+        printf ("\n\n|");
+        for (int i = 0; i < raiz->n; i++)
+        {
+            if(raiz->regs[i]->infos->overall >= overall)
+            {
+                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
+            }
+        }
+
+        printf ("|");
+
+        for (int i = 0; i < raiz->n + 1; i++)
+        {
+            imprimir_acima_de_overall(raiz->filho[i], overall);
+        }
+    }
+}
+
+void imprimir_atletas_por_posicao(arvB *raiz, char posicao[])
+{
+    if (raiz != NULL)
+    {
+        printf ("\n\n|");
+        for (int i = 0; i < raiz->n; i++)
+        {
+            if(strcmp(raiz->regs[i]->infos->posicao, posicao) == 0)
+            {
+                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
+            }
+        }
+
+        printf ("|");
+
+        for (int i = 0; i < raiz->n + 1; i++)
+        {
+            imprimir_atletas_por_posicao(raiz->filho[i], posicao);
+        }
+    }
+}
+
+void imprimir_atletas_por_clube(arvB *raiz, char clube[])
+{
+    if (raiz != NULL)
+    {
+        printf ("\n\n|");
+        for (int i = 0; i < raiz->n; i++)
+        {
+            if(strcmp(raiz->regs[i]->infos->clube, clube) == 0)
+            {
+                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
+            }
+        }
+
+        printf ("|");
+
+        for (int i = 0; i < raiz->n + 1; i++)
+        {
+            imprimir_atletas_por_clube (raiz->filho[i], clube);
         }
     }
 }
@@ -352,34 +364,6 @@ void mergeChildArvoreB (arvB *x, int i) // função merge
 
 
 }
-
-// implementando a remoção de um número K
-// caso 1: k no nó folha -> remoção direta -> mais simples -> reajuste e x->n-- 
-
-// caso 2: t-1 -> mínimo de chaves no nó -> logo, para se retirar precisa ter no minimo t para substituição
-// a - encontrar um predecessor na posição i de k -> k'
-//      coloca o k' no lugar do k
-//      remove o k' (original)
-
-// b - encontrar um sucessor na posição i+1 de k -> k'
-//      coloca k' no lugar do k
-//      remove o k' (original)
-
-// c - os dois nós estão com o mínimo (t - 1)
-//      merge nos filhos (i, i+1)
-//      remove o k
-
-// caso 3: esse caso não remove apenas garante que os filhos tenham pelo menos t chaves 
-// a - filho i tem t-1 chaves
-//      passa a chave ao filho que tem só t-1 chaves
-//      passa ao pai (x) um elemento do filho que tem pelo menos t chaves
-//              -> se o filho for da direita: pega o menor
-//              -> se o filho for da esquerda: pega o maior
-
-// b - os dois filhos tem apenas t-1 chaves
-//      merge nos filhos
-//      insere o elemento do pai no nó filho tbm
-
 
 void remover_rec (arvB *x, int k) // a remoção usará os casos acima + função merge
 {
@@ -637,3 +621,77 @@ arvB* remover(arvB *raiz, int k)
     return raiz;
 }
 
+int menu()
+{
+    int i;
+
+    printf ("\n1- INSERIR ATLETA");
+    printf ("\n2- REMOVER ATLETA");
+    printf ("\n3- IMPRIMIR BANCO DE DADOS");
+    printf ("\n4- FICHA TECNICA DO ATLETA");
+    printf ("\n5- IMPRIMIR ATLETAS POR CLUBE");
+    printf ("\n6- IMPRIMIR ATLETAS POR POSICAO");
+    printf ("\n7- IMPRIMIR ATLETAS ACIMA DE X OVERALL");
+    printf ("\n10- SAIR\n");
+    
+    printf ("\nInforme sua opcao: ");
+    scanf ("%d", &i);
+
+    return i;
+}
+
+void imprimir_jogador_por_id(arvB* raiz, int id_buscado)
+{
+    arvB *arv = buscarArv(raiz, id_buscado);
+
+     if (arv != NULL)
+                {
+                    int i = 0;
+
+                    while (i < arv->n && arv->regs[i]->id != id_buscado)
+                    {
+                        i++;
+                    }
+
+                    if (arv->regs[i] != NULL)
+                    {
+                        imprimir_jogador(arv->regs[i]);
+                    }
+                
+                }
+                else
+                {
+                    printf ("\nAtleta nao encontrado");
+                }
+}
+
+void imprimir_jogador(Registro* regs)
+{
+    printf("\n+---------------------------------------+\n");
+    printf("|          INFORMAÇÕES DO ATLETA        |\n");
+    printf("+---------------------------------------+\n");
+    printf("| %-12s | %-22d |\n", "ID", regs->id);
+    printf("| %-12s | %-22d |\n", "CPF", regs->cpf);
+    printf("| %-12s | %-22s |\n", "Nome", regs->nome);
+    printf("| %-12s | %-22s |\n", "Clube", regs->infos->clube);
+    printf("| %-12s | %-22s |\n", "Posição", regs->infos->posicao);
+    printf("+---------------------------------------+\n");
+    printf("|             STATUS FÍSICO             |\n");
+    printf("+---------------------------------------+\n");
+    printf("| %-12s | %-22s |\n", "Lesionado", regs->infos->isLesionado ? "Sim" : "Não");
+    printf("| %-12s | %-22s |\n", "Perna Boa", regs->infos->pernaBoa ? "Esquerda" : "Direita");
+    printf("+---------------------------------------+\n");
+    printf("|              ATRIBUTOS                |\n");
+    printf("+------------------+--------------------+\n");
+    printf("| %-12s | %-3d %-16s |\n", "Ritmo", regs->infos->pace, "");
+    printf("| %-12s | %-3d %-16s |\n", "Finalização", regs->infos->finalizacao, "");
+    printf("| %-12s | %-3d %-16s |\n", "Passe", regs->infos->pas, "");
+    printf("| %-12s | %-3d %-16s |\n", "Finta", regs->infos->finta, "");
+    printf("| %-12s | %-3d %-16s |\n", "Defesa", regs->infos->defesa, "");
+    printf("| %-12s | %-3d %-16s |\n", "Físico", regs->infos->fisico, "");
+    printf("+------------------+--------------------+\n");
+    printf("| %-12s | %-22d |\n", "OVERALL", regs->infos->overall);
+    printf("+---------------------------------------+\n\n");
+    
+    printf ("\n");
+}
