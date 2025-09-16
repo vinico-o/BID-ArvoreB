@@ -5,6 +5,39 @@
 #include <string.h>
 #include "estruturas.h"
 
+void aleatorizarInformacoes(Registro *r)
+{
+    r->infos = malloc(sizeof(BID));
+
+    r->infos->isLesionado = rand() % 2;
+    r->infos->pernaBoa = rand() % 2;
+
+    r->infos->finta = rand() % 70 + 30;
+    r->infos->pace = rand() % 70 + 30;
+    r->infos->pas = rand() % 70 + 30;
+    r->infos->defesa = rand() % 70 + 30;
+    r->infos->fisico = rand() % 70 + 30;
+
+    strcpy(r->infos->clube, timesSerieA[rand() % 20]);
+    strcpy(r->infos->posicao, posicoes[rand() % 11]);
+}
+
+Registro* criarJogador()
+{
+    Registro *reg = malloc(sizeof(Registro));
+
+    reg->id = id;
+    id++;
+
+    reg->cpf = rand() % 1000000;
+
+    strcpy(reg->nome, titulares[rand() % 20][rand() % 11]);
+
+    aleatorizarInformacoes(reg);
+
+    return reg;
+}
+
 arvB* criarNoRaizInicial()
 {
     arvB *novoNo = malloc(sizeof(arvB));
@@ -43,13 +76,6 @@ arvB* buscarArv (arvB *r, int k)
     
     if (i < r->n && k == r->regs[i]->id)
     {
-        printf ("\nRegistro encontrado! Informacoes do registro:");
-        printf ("\n[ ");
-        printf ("id: %d  ", r->regs[i]->id);
-        printf ("cpf: %d  ", r->regs[i]->cpf);
-        printf ("nome: %s ]", r->regs[i]->nome);
-
-        printf ("\n");
         return r;
     }
 
@@ -218,11 +244,19 @@ void imprimir_arvore(arvB *arv, int nivel)
         for (int i = 0; i < arv->n; i++)
         {
             printf ("| ");
-            printf ("id: %d   ", arv->regs[i]->id);
-            printf ("cpf: %d   ", arv->regs[i]->cpf);
-            printf ("nome: %s   ", arv->regs[i]->nome);
+            printf ("id: %d ", arv->regs[i]->id);
+            printf ("cpf: %d ", arv->regs[i]->cpf);
+            printf ("nome: %s ", arv->regs[i]->nome);
+            printf ("esta lesionado? %d ", arv->regs[i]->infos->isLesionado);
+            printf ("perna boa? %d ", arv->regs[i]->infos->pernaBoa);
+            printf ("finta? %d ", arv->regs[i]->infos->finta);
+            printf ("pace? %d ", arv->regs[i]->infos->pace);
+            printf ("pas? %d ", arv->regs[i]->infos->pas);
+            printf ("defesa? %d ", arv->regs[i]->infos->defesa);
+            printf ("clube? %s ", arv->regs[i]->infos->clube);
+            printf ("posicao? %s ", arv->regs[i]->infos->posicao);
+            
             printf (" |");
-
             printf ("\n");
         }
 
@@ -247,6 +281,24 @@ void imprimir(arvB *raiz)
     imprimir_arvore(raiz, 0);
 }
 
+void imprimir_informacoes_basicas(arvB *raiz)
+{
+    if (raiz != NULL)
+    {
+        printf ("\n\n{");
+        for (int i = 0; i < raiz->n; i++)
+        {
+            printf ("  [id : %d  nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
+        }
+
+        printf ("}");
+
+        for (int i = 0; i < raiz->n + 1; i++)
+        {
+            imprimir_informacoes_basicas (raiz->filho[i]);
+        }
+    }
+}
 
 void mergeChildArvoreB (arvB *x, int i) // função merge
 {
@@ -355,8 +407,6 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
             }
 
             x->n--;
-
-            // escrever(x);
 
             printf ("\n\nELEMENTO REMOVIDO!!");
         }
@@ -586,99 +636,3 @@ arvB* remover(arvB *raiz, int k)
     return raiz;
 }
 
-
-
-
-
-
-
-int main ()
-{
-    printf ("\nInforme o t: ");
-    scanf ("%d", &t);
-
-    if (t < 2)
-    {
-        printf ("\nVALOR INVALIDO PARA T - encerrando programa");
-        return 0;
-    }
-
-    arvB *raiz = criarNoRaizInicial();
-
-
-    int i;
-
-    do
-    {
-        printf ("\n1- INSERIR");
-        printf ("\n2- REMOVER");
-        printf ("\n3- IMPRIMIR");
-        printf ("\n4- BUSCAR");
-        printf ("\n5- SAIR\n");
-        
-        printf ("\nInforme sua opcao: ");
-        scanf ("%d", &i);
-
-        switch (i)
-        {
-            int cpf;
-            char nome[50];
-            int id_buscado;
-            int id_remover;
-
-            case 1:
-
-                printf ("\nInforme o cpf: ");
-                scanf ("%d", &cpf);
-
-                getchar();
-
-                printf ("\nInforme o nome: ");
-                fgets(nome, sizeof(nome), stdin);
-                nome[strcspn(nome, "\n")] = '\0';
-
-                Registro *novo = malloc(sizeof(Registro));
-                novo->id = id;
-                novo->cpf = cpf;
-                strcpy(novo->nome, nome);
-
-                id++;
-
-                raiz = insereArvoreB (raiz, novo);
-            break;
-
-            case 2:
-                printf ("\nInforme o id a ser removido do banco de dados: ");
-                scanf ("%d", &id_remover);
-
-                raiz = remover(raiz, id_remover);
-            break;
-
-            case 3:
-                imprimir (raiz);
-            break;
-
-            case 4:
-                printf ("\nInforme o id a ser buscado no banco de dados: ");
-                scanf ("%d", &id_buscado);
-
-                buscarArv(raiz, id_buscado);
-            break;
-
-            case 5:
-                printf ("\nSAINDO DO BANCO DE DADOS");
-                return 0;
-            break;
-
-            default:
-                printf ("\nEscolha outra opcao");
-            break;
-        }
-
-
-    } while (i != 5);
-    
-
-
-    return 0;
-}
