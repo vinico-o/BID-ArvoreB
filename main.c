@@ -9,6 +9,8 @@ int main ()
 
     setlocale(LC_ALL, "Portuguese");
 
+    printf ("\nBEM VINDO AO BANCO DE DADOS DOS JOGADORES");
+
     printf ("\nInforme o t: ");
     scanf ("%d", &t);
 
@@ -25,10 +27,10 @@ int main ()
 
     do
     {
-        printf ("\n1- INSERIR");
-        printf ("\n2- REMOVER");
-        printf ("\n3- IMPRIMIR ÁRVORE");
-        printf ("\n4- BUSCAR");
+        printf ("\n1- INSERIR ATLETA");
+        printf ("\n2- REMOVER ATLETA");
+        printf ("\n3- IMPRIMIR BANCO DE DADOS");
+        printf ("\n4- BUSCAR ATLETA");
         printf ("\n5- SAIR\n");
         
         printf ("\nInforme sua opcao: ");
@@ -75,20 +77,24 @@ int main ()
 
                     if (arv->regs[i] != NULL)
                     {
-                        printf ("Imprimindo informacoes do atleta:\n");
-                        printf ("id: %d  ", arv->regs[i]->id);
-                        printf ("cpf: %d  ", arv->regs[i]->cpf);
-                        printf ("nome: %s  ", arv->regs[i]->nome);
-                        printf ("esta lesionado? %d  ", arv->regs[i]->infos->isLesionado);
-                        printf ("perna boa? %d  ", arv->regs[i]->infos->pernaBoa);
-                        printf ("finta? %d  ", arv->regs[i]->infos->finta);
-                        printf ("pace? %d  ", arv->regs[i]->infos->pace);
-                        printf ("pas? %d  ", arv->regs[i]->infos->pas);
-                        printf ("defesa? %d  ", arv->regs[i]->infos->defesa);
-                        printf ("clube? %s  ", arv->regs[i]->infos->clube);
-                        printf ("posicao? %s  ", arv->regs[i]->infos->posicao);
+                        printf("\n--- Informações do Atleta ---\n");
+                        printf("ID: %d\n", arv->regs[i]->id);
+                        printf("CPF: %d\n", arv->regs[i]->cpf);
+                        printf("Nome: %s\n", arv->regs[i]->nome);
+                        printf("Lesionado: %s\n", arv->regs[i]->infos->isLesionado ? "Sim" : "Não");
+                        printf("Perna Boa: %s\n", arv->regs[i]->infos->pernaBoa ? "Esquerda" : "Direita");
+                        printf("Finta: %d\n", arv->regs[i]->infos->finta);
+                        printf("Ritmo: %d\n", arv->regs[i]->infos->pace);
+                        printf("Passe: %d\n", arv->regs[i]->infos->pas);
+                        printf("Fisico: %d\n", arv->regs[i]->infos->fisico);
+                        printf("Finalizacao: %d\n", arv->regs[i]->infos->finalizacao);
+                        printf ("Overral: %d\n", (arv->regs[i]->infos->finta + arv->regs[i]->infos->pace + arv->regs[i]->infos->pas +
+                                                         arv->regs[i]->infos->fisico + arv->regs[i]->infos->finalizacao) / 5);
+                        printf("Defesa: %d\n", arv->regs[i]->infos->defesa);
+                        printf("Clube: %s\n", arv->regs[i]->infos->clube);
+                        printf("Posição: %s\n", arv->regs[i]->infos->posicao);
+                        printf("-----------------------------\n");
                         
-                        printf (" |");
                         printf ("\n");
                     }
                 

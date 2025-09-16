@@ -104,6 +104,7 @@ typedef struct {
     int pas;          // nota do passe        (0 a 99)
     int defesa;       // nota da defesa        (0 a 99)
     int fisico;       // nota do fisico        (0 a 99)
+    int finalizacao;
     char clube[50];     // nome do clube        
     char posicao[50];   // nome da posicao      
 

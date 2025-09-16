@@ -17,6 +17,7 @@ void aleatorizarInformacoes(Registro *r)
     r->infos->pas = rand() % 70 + 30;
     r->infos->defesa = rand() % 70 + 30;
     r->infos->fisico = rand() % 70 + 30;
+    r->infos->finalizacao = rand() % 70 + 30;
 
     strcpy(r->infos->clube, timesSerieA[rand() % 20]);
     strcpy(r->infos->posicao, posicoes[rand() % 11]);
