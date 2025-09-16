@@ -473,7 +473,7 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
             remover_rec(y, k);                          // o k (desceu ao filho_merge) precisa ser removido
         }
 
-        // escrever(x);
+        
     }
 
     // caso 3 - nao achou o valor
