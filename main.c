@@ -21,7 +21,7 @@ int main ()
     }
 
     int escolha;
-    arvB *raiz = criarNoRaizInicial();
+    arvB *raiz = carregarOuCriarArvore();
 
     do
     {

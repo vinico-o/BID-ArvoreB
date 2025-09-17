@@ -1,6 +1,8 @@
 #ifndef ESTRUTURAS_H
 #define ESTRUTURAS_H
-
+#include <stdbool.h>
+#define TAM_ARQ 33
+#define TAM_NOME_ARQUIVO 256
 int t;
 int id = 1;
 /* 
@@ -127,13 +129,14 @@ typedef struct no{
     bool folha;
     Registro **regs;
     struct no **filho;
-
+    char *name_arq;
 } arvB;
 
 //FUNCAO DE BUSCA
 arvB* buscarArv (arvB *r, int k);
 
 //FUNCOES UTILIZADAS NA INSERCAO
+arvB* criarNoVazio(bool folha);
 arvB* criarNoRaizInicial();
 arvB* insereArvoreB(arvB *r, Registro *k);
 void insereNaoCheioArvoreB(arvB *x, Registro *k);
@@ -143,6 +146,7 @@ void splitChildArvoreB (arvB *x, int i);
 arvB* remover(arvB *raiz, int k);
 void remover_rec (arvB *x, int k);
 void mergeChildArvoreB (arvB *x, int i);
+void liberarArvore(arvB *raiz);
 
 //FUNCOES DE IMPRESSAO
 void imprimir_informacoes_basicas(arvB *raiz);
@@ -158,5 +162,14 @@ int menu();
 //FUNCOES CRIACAO DE JOGADOR
 void aleatorizarInformacoes(Registro *r);
 Registro* criarJogador();
+
+//FUNCOES ARQUIVO
+void leituraBin(arvB* raiz);
+void escreverBin(arvB* raiz);
+char* GeraNomeArqBin();
+void salvarNomeNovaRaiz(arvB *raiz);
+bool arquivoExiste(const char *nomeArquivo);
+arvB* carregarOuCriarArvore();
+
 
 #endif

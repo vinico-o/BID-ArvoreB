@@ -4,7 +4,27 @@
 #include <stdbool.h>
 #include <string.h>
 #include "estruturas.h"
-
+void liberarArvore(arvB *raiz)
+{
+    if (raiz != NULL) {
+        // Libera a memória dos filhos primeiro
+        if (raiz->folha == false) {
+            for (int i = 0; i <= raiz->n; i++) {
+                liberarArvore(raiz->filho[i]);
+            }
+            free(raiz->filho);
+        }
+        // Libera a memória dos registros e suas informações
+        for(int i = 0; i < raiz->n; i++){
+            free(raiz->regs[i]->infos);
+            free(raiz->regs[i]);
+        }
+        free(raiz->regs);
+        // Libera o nome do arquivo e o nó raiz
+        free(raiz->name_arq);
+        free(raiz);
+    }
+}
 void aleatorizarInformacoes(Registro *r)
 {
     r->infos = malloc(sizeof(BID));
@@ -39,14 +59,26 @@ Registro* criarJogador()
 
     return reg;
 }
-
+char* GeraNomeArqBin() {
+    char *name_bin = malloc(TAM_ARQ * sizeof(char));
+    if (name_bin == NULL) {
+        printf("Erro de alocação de memória para nome do arquivo.\n");
+        exit(1);
+    }
+    for(int i=0; i<18; i++) {
+        name_bin[i] = 'a' + (rand() % 26);
+    }
+    name_bin[18] = '\0';
+    strcat(name_bin,".bin");
+    return name_bin;
+}
 arvB* criarNoRaizInicial()
 {
     arvB *novoNo = malloc(sizeof(arvB));
 
     novoNo->regs = malloc((2*t-1) * sizeof(Registro*));
     novoNo->filho = malloc((2*t) * sizeof(arvB*));
-
+    novoNo->name_arq = GeraNomeArqBin();
     novoNo->n = 0;
     novoNo->folha = true;
 
@@ -59,11 +91,117 @@ arvB* criarNoRaizInicial()
     {
         novoNo->filho[i] = NULL;
     }
-
+    escreverBin(novoNo);
     return novoNo;
 }
-
-
+arvB* criarNoVazio(bool folha)
+{
+    arvB *novoNo = malloc(sizeof(arvB));
+    novoNo->regs = malloc((2*t-1) * sizeof(Registro*));
+    novoNo->filho = malloc((2*t) * sizeof(arvB*));
+    novoNo->name_arq = GeraNomeArqBin(); // Gera nome único
+    novoNo->n = 0;
+    novoNo->folha = folha;
+    for (int i = 0; i < 2*t; i++) {
+        novoNo->filho[i] = NULL;
+    }
+    return novoNo;
+}
+void leituraBin(arvB* raiz) {
+    FILE *arq = fopen(raiz->name_arq,"rb");
+    if(!arq) {
+        printf("Erro ao abrir arquivo %s!\n",raiz->name_arq);
+        return;
+    }
+    fread(&raiz->n,sizeof(int),1,arq);
+    fread(&raiz->folha,sizeof(bool),1,arq);
+    
+    // Aloca o tamanho máximo, não apenas raiz->n
+    raiz->regs = (Registro**) malloc((2*t-1) * sizeof(Registro*));
+    for(int i=0;i<raiz->n;i++) {
+        raiz->regs[i] = malloc(sizeof(Registro));
+        fread(raiz->regs[i], sizeof(Registro), 1, arq);
+        raiz->regs[i]->infos = malloc(sizeof(BID));
+        fread(raiz->regs[i]->infos, sizeof(BID), 1, arq);
+    }
+    
+    if(raiz->folha==false) {
+        raiz->filho = (arvB**) malloc((2*t) * sizeof(arvB*)); // capacidade total
+        char nome_filho[TAM_ARQ];
+        for(int i=0;i<=raiz->n;i++) {
+            fread(nome_filho, sizeof(char), TAM_ARQ, arq);
+            raiz->filho[i] = (arvB*) malloc(sizeof(arvB));
+            raiz->filho[i]->name_arq = (char*) malloc(TAM_ARQ);
+            strcpy(raiz->filho[i]->name_arq, nome_filho);
+            leituraBin(raiz->filho[i]);
+        }
+        // inicializa filhos restantes como NULL
+        for (int i=raiz->n+1;i<2*t;i++) raiz->filho[i] = NULL;
+    } else {
+        raiz->filho = (arvB**) malloc((2*t) * sizeof(arvB*));
+        for (int i=0;i<2*t;i++) raiz->filho[i] = NULL;
+    }
+    fclose(arq);
+}
+void escreverBin(arvB* raiz)
+{
+    FILE *arq = fopen(raiz->name_arq,"wb");
+    if(!arq) {
+        printf("Erro ao abrir o arquivo %s!\n",raiz->name_arq);
+        return;
+    }
+    fwrite(&raiz->n,sizeof(int),1,arq);
+    fwrite(&raiz->folha,sizeof(bool),1,arq);
+    for(int i=0;i<raiz->n;i++) {
+        fwrite(raiz->regs[i], sizeof(Registro), 1, arq);
+        fwrite(raiz->regs[i]->infos, sizeof(BID), 1, arq);
+    }
+    if (raiz->folha == false) {
+        for(int i=0;i<=raiz->n;i++) {
+            fwrite(raiz->filho[i]->name_arq, sizeof(char), TAM_ARQ, arq);
+        }
+        for(int i=0;i<=raiz->n;i++) {
+            escreverBin(raiz->filho[i]);
+        }
+    }
+    fclose(arq);
+}
+void salvarNomeNovaRaiz(arvB *raiz) {
+    char caminho_completo[] = "meta_raiz.txt";
+    FILE *arq = fopen(caminho_completo, "w");
+    if (arq != NULL) {
+        fprintf(arq, "%s", raiz->name_arq);
+        fclose(arq);
+    }
+}
+bool arquivoExiste(const char *nomeArquivo) {
+    FILE *arq = fopen(nomeArquivo, "rb");
+    if (arq) {
+        fclose(arq);
+        return true;
+    }
+    return false;
+}
+arvB* carregarOuCriarArvore() {
+    char caminho_completo_meta[] = "meta_raiz.txt";
+    char nome_do_arquivo_raiz[TAM_NOME_ARQUIVO];
+    FILE *meta_arq = fopen(caminho_completo_meta, "r");
+    if (meta_arq != NULL) {
+        fscanf(meta_arq, "%s", nome_do_arquivo_raiz);
+        fclose(meta_arq);
+        printf("\nCarregando arvore a partir de %s...\n", nome_do_arquivo_raiz);
+        arvB *raiz = malloc(sizeof(arvB));
+        raiz->name_arq = (char*) malloc(strlen(nome_do_arquivo_raiz) + 1);
+        strcpy(raiz->name_arq, nome_do_arquivo_raiz);
+        leituraBin(raiz);
+        return raiz;
+    } else {
+        printf("\nCriando nova arvore...\n");
+        arvB *raiz = criarNoRaizInicial();
+        salvarNomeNovaRaiz(raiz);
+        return raiz;
+    }
+}
 arvB* buscarArv (arvB *r, int k)
 {
     int i = 0;
@@ -93,7 +231,7 @@ arvB* buscarArv (arvB *r, int k)
 void splitChildArvoreB (arvB *x, int i) // função de split -> recebe o nó pai e o índice do filho que será dividido
 {
     // novo nó
-    arvB *z = criarNoRaizInicial();
+    arvB *z = criarNoVazio(true);
 
     // ponteiro ao filho que sofrerá split
     arvB *y = x->filho[i];
@@ -142,7 +280,9 @@ void splitChildArvoreB (arvB *x, int i) // função de split -> recebe o nó pai
     // inserindo a mediana e atualizando o valor de n
     x->regs[i] = y->regs[t-1];
     x->n++;
-
+    escreverBin(y);
+    escreverBin(z);
+    escreverBin(x);
 }
 
 void insereNaoCheioArvoreB(arvB *x, Registro *k)
@@ -168,7 +308,7 @@ void insereNaoCheioArvoreB(arvB *x, Registro *k)
         x->n++;
 
         // escrevendo no disco
-
+        escreverBin(x);
     }
     
     // se o nó não é folha -> busca o filho
@@ -183,7 +323,7 @@ void insereNaoCheioArvoreB(arvB *x, Registro *k)
 
         // ajuste
         i++;
-
+        leituraBin(x->filho[i]);
 
         // verifica se o nó filho está cheio
         if (x->filho[i]->n == 2*t - 1)
@@ -212,12 +352,12 @@ arvB* insereArvoreB(arvB *r, Registro *k)  // função de inserir
     // se o nó estiver cheio, cria-se um novo nó (não folha, 0 chaves, primeiro filho como o nó anterior(que estava cheio) e insere o k no novo nó)
     if (r->n == 2*t - 1)          
     {
-        arvB *s = criarNoRaizInicial();
+        arvB *s = criarNoVazio(false);
         s->folha = false;
         s->filho[0] = r;
         splitChildArvoreB(s, 0);
         insereNaoCheioArvoreB(s, k);
-
+        salvarNomeNovaRaiz(s);
         return s;   // manter a raiz atualizada
     }
     // se não estiver cheio, insere normalmente
@@ -359,9 +499,10 @@ void mergeChildArvoreB (arvB *x, int i) // função merge
         x->filho[j] = x->filho[j+1];
     }
 
-    free (z);
+    liberarArvore(z);
     x->filho[x->n + 1] = NULL;
-
+    escreverBin(y);
+    escreverBin(x);
 
 }
 
@@ -385,14 +526,15 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
     {
         if (i < x->n && x->regs[i]->id == k)
         {
-
+            free(x->regs[i]->infos);
+            free(x->regs[i]);
             for (int j = i; j < x->n - 1; j++)
             {
                 x->regs[j] = x->regs[j+1];
             }
 
             x->n--;
-
+            escreverBin(x);
             printf ("\n\nELEMENTO REMOVIDO!!");
         }
         
@@ -425,7 +567,8 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
             }
 
             predecessor = y->regs[y->n - 1];
-
+            free(x->regs[i]->infos);
+            free(x->regs[i]);
             x->regs[i] = predecessor;              // copiando o valor para o nó pai
 
             remover_rec(x->filho[i], predecessor->id);                // removendo o número original
@@ -443,7 +586,8 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
             }
 
             sucessor = z->regs[0];
-
+            free(x->regs[i]->infos);
+            free(x->regs[i]);
             x->regs[i] = sucessor;               // copiando o valor
 
             remover_rec (x->filho[i+1], sucessor->id);     // removendo o número original
@@ -457,7 +601,7 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
 
             remover_rec(y, k);                          // o k (desceu ao filho_merge) precisa ser removido
         }
-
+        escreverBin(x);
         
     }
 
@@ -608,13 +752,16 @@ arvB* remover(arvB *raiz, int k)
         
         if (raiz->folha == false) {
             arvB *novaRaiz = raiz->filho[0];
+            free(raiz->filho);
+            free(raiz->regs);
             free(raiz);
             raiz = novaRaiz;
         } 
         else {
-            
+            free(raiz->filho);
+            free(raiz->regs);            
             free(raiz);
-            raiz = criarNoRaizInicial();
+            raiz = criarNoVazio(true);
         }
     }
 
