@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "estruturas.h"
+
 void liberarArvore(arvB *raiz)
 {
     if (raiz != NULL) {
@@ -143,6 +144,7 @@ void leituraBin(arvB* raiz) {
     }
     fclose(arq);
 }
+
 void escreverBin(arvB* raiz)
 {
     FILE *arq = fopen(raiz->name_arq,"wb");
@@ -166,6 +168,7 @@ void escreverBin(arvB* raiz)
     }
     fclose(arq);
 }
+
 void salvarNomeNovaRaiz(arvB *raiz) {
     char caminho_completo[] = "meta_raiz.txt";
     FILE *arq = fopen(caminho_completo, "w");
@@ -174,6 +177,7 @@ void salvarNomeNovaRaiz(arvB *raiz) {
         fclose(arq);
     }
 }
+
 bool arquivoExiste(const char *nomeArquivo) {
     FILE *arq = fopen(nomeArquivo, "rb");
     if (arq) {
@@ -182,6 +186,7 @@ bool arquivoExiste(const char *nomeArquivo) {
     }
     return false;
 }
+
 arvB* carregarOuCriarArvore() {
     char caminho_completo_meta[] = "meta_raiz.txt";
     char nome_do_arquivo_raiz[TAM_NOME_ARQUIVO];
@@ -194,6 +199,10 @@ arvB* carregarOuCriarArvore() {
         raiz->name_arq = (char*) malloc(strlen(nome_do_arquivo_raiz) + 1);
         strcpy(raiz->name_arq, nome_do_arquivo_raiz);
         leituraBin(raiz);
+        
+        // ajusta o ID global pra evitar duplicatas
+        id = encontrarMaiorID(raiz) + 1;
+        
         return raiz;
     } else {
         printf("\nCriando nova arvore...\n");
@@ -202,6 +211,34 @@ arvB* carregarOuCriarArvore() {
         return raiz;
     }
 }
+
+int encontrarMaiorID(arvB *raiz) {
+    if (raiz == NULL) return 0;
+    
+    int maiorID = 0;
+    
+    // percorre todos os registros do nó atual
+    for (int i = 0; i < raiz->n; i++) {
+        if (raiz->regs[i]->id > maiorID) {
+            maiorID = raiz->regs[i]->id;
+        }
+    }
+    
+    // se não é folha, verifica os filhos
+    if (!raiz->folha) {
+        for (int i = 0; i <= raiz->n; i++) {
+            if (raiz->filho[i] != NULL) {
+                int idFilho = encontrarMaiorID(raiz->filho[i]);
+                if (idFilho > maiorID) {
+                    maiorID = idFilho;
+                }
+            }
+        }
+    }
+    
+    return maiorID;
+}
+
 arvB* buscarArv (arvB *r, int k)
 {
     int i = 0;

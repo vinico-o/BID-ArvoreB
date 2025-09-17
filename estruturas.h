@@ -1,10 +1,14 @@
 #ifndef ESTRUTURAS_H
 #define ESTRUTURAS_H
+
 #include <stdbool.h>
+
 #define TAM_ARQ 33
 #define TAM_NOME_ARQUIVO 256
+
 int t;
 int id = 1;
+
 /* 
 
 implementar:
@@ -111,7 +115,7 @@ typedef struct {
     char clube[50];     // nome do clube        
     char posicao[50];   // nome da posicao      
 
-}BID;
+} BID;
 
 typedef struct {
 
@@ -123,7 +127,7 @@ typedef struct {
 } Registro;
 
 
-typedef struct no{
+typedef struct no {
 
     int n;
     bool folha;
@@ -132,23 +136,23 @@ typedef struct no{
     char *name_arq;
 } arvB;
 
-//FUNCAO DE BUSCA
+// FUNCAO DE BUSCA
 arvB* buscarArv (arvB *r, int k);
 
-//FUNCOES UTILIZADAS NA INSERCAO
+// FUNCOES UTILIZADAS NA INSERCAO
 arvB* criarNoVazio(bool folha);
 arvB* criarNoRaizInicial();
 arvB* insereArvoreB(arvB *r, Registro *k);
 void insereNaoCheioArvoreB(arvB *x, Registro *k);
 void splitChildArvoreB (arvB *x, int i);
 
-//FUNCOES UTILIZADAS NA REMOCAO
+// FUNCOES UTILIZADAS NA REMOCAO
 arvB* remover(arvB *raiz, int k);
 void remover_rec (arvB *x, int k);
 void mergeChildArvoreB (arvB *x, int i);
 void liberarArvore(arvB *raiz);
 
-//FUNCOES DE IMPRESSAO
+// FUNCOES DE IMPRESSAO
 void imprimir_informacoes_basicas(arvB *raiz);
 void imprimir_acima_de_overall(arvB *raiz, int overall);
 void imprimir_atletas_por_posicao(arvB *raiz, char posicao[]);
@@ -156,20 +160,23 @@ void imprimir_atletas_por_clube(arvB *raiz, char clube[]);
 void imprimir_jogador_por_id(arvB* raiz, int id_buscado);
 void imprimir_jogador(Registro* regs);
 
-//FUNCOES DA MAIN
+// FUNCOES DA MAIN
 int menu();
 
-//FUNCOES CRIACAO DE JOGADOR
+// FUNCOES CRIACAO DE JOGADOR
 void aleatorizarInformacoes(Registro *r);
 Registro* criarJogador();
 
-//FUNCOES ARQUIVO
+// FUNCOES ARQUIVO
 void leituraBin(arvB* raiz);
 void escreverBin(arvB* raiz);
 char* GeraNomeArqBin();
 void salvarNomeNovaRaiz(arvB *raiz);
 bool arquivoExiste(const char *nomeArquivo);
 arvB* carregarOuCriarArvore();
+
+// FUNCAO PARA CONTROLE DE ID
+int encontrarMaiorID(arvB *raiz);
 
 
 #endif
