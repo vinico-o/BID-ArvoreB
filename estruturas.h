@@ -9,79 +9,69 @@
 int t;
 int id = 1;
 
-/* 
-
-implementar:
-
-    inserção aleatória
-    buscas diversificadas (p/ clube, p/ posicao, overall)
-    inserção em arquivo binário
-    
-*/
-
 char *timesSerieA[20] = {
-    "Atlético Mineiro",
+    "Atletico Mineiro",
     "Bahia",
     "Botafogo",
-    "Ceará",
+    "Ceara",
     "Corinthians",
     "Cruzeiro",
     "Flamengo",
     "Fluminense",
     "Fortaleza",
-    "Grêmio",
+    "Gremio",
     "Internacional",
     "Juventude",
     "Mirassol",
     "Palmeiras",
     "RB Bragantino",
     "Santos",
-    "São Paulo",
+    "Sao Paulo",
     "Sport Recife",
     "Vasco da Gama",
-    "Vitória"
+    "Vitoria"
 };
 
 char *titulares[20][11] = {
-        // Atlético-MG
+        // Atletico-MG
         {"Everson", "Natanael", "Rabello", "Vitor Hugo", "Rubens", "Alan Franco", "Patrick", "Scarpa", "Rony", "Igor Gomes", "Hulk"},
         // Bahia
-        {"Ronaldo", "Gilberto", "David Duarte", "Ramos Mingo", "Luciano Juba", "Nicolás Acevedo", "Rodrigo Nestor", "Everton Ribeiro", "Kayky", "Cauly", "Willian José"},
+        {"Ronaldo", "Gilberto", "David Duarte", "Ramos Mingo", "Luciano Juba", "Nicolas Acevedo", "Rodrigo Nestor", "Everton Ribeiro", "Kayky", "Cauly", "Willian Jose"},
         // Botafogo
-        {"John", "Vitinho", "Bastos", "Alexander Barbosa", "Marçal", "Gregore", "Marlon Freitas", "Eduardo", "Savarino", "Júnior Santos", "Tiquinho Soares"},
-        // Ceará
-        {"Richard", "Raí Ramos", "Matheus Felipe", "Ramon Menezes", "Matheus Bahia", "Richardson", "Lourenço", "Guilherme Castilho", "Aylon", "Erick Pulga", "Facundo Barceló"},
+        {"John", "Vitinho", "Bastos", "Alexander Barbosa", "Marcal", "Gregore", "Marlon Freitas", "Eduardo", "Savarino", "Junior Santos", "Tiquinho Soares"},
+        // Ceara
+        {"Richard", "Rai Ramos", "Matheus Felipe", "Ramon Menezes", "Matheus Bahia", "Richardson", "Lourenco", "Guilherme Castilho", "Aylon", "Erick Pulga", "Facundo Barcelo"},
         // Corinthians
-        {"Hugo Souza", "Matheuzinho", "Gustavo Henrique", "André Ramalho", "Angileri", "Matheus Bidu", "Ryan", "Maycon", "Vitinho", "Kayke", "Gui Negão"},
+        {"Hugo Souza", "Matheuzinho", "Gustavo Henrique", "Andre Ramalho", "Angileri", "Matheus Bidu", "Ryan", "Maycon", "Vitinho", "Kayke", "Gui Negao"},
         // Cruzeiro
-        {"Cássio", "Jonathan Jesus", "Fabrício Bruno", "Lucas Villalba", "Kauã Prates", "Walace", "Lucas Silva", "Eduardo", "Matheus Pereira", "Wanderson", "Kaio Jorge"},
+        {"Cassio", "Jonathan Jesus", "Fabricio Bruno", "Lucas Villalba", "Kaua Prates", "Walace", "Lucas Silva", "Eduardo", "Matheus Pereira", "Wanderson", "Kaio Jorge"},
         // Flamengo
-        {"Rossi", "Wesley", "Léo Ortiz", "Danilo", "Varela", "Pulgar", "De la Cruz", "Arrascaeta", "Gerson", "Plata", "Bruno Henrique"},
+        {"Rossi", "Wesley", "Leo Ortiz", "Danilo", "Varela", "Pulgar", "De la Cruz", "Arrascaeta", "Gerson", "Plata", "Bruno Henrique"},
         // Fluminense
-        {"Fábio", "Guga", "Freytes", "Thiago Silva", "Renê", "Hércules", "Martinelli", "Nonato", "Canobbio", "Serna", "Everaldo"},
+        {"Fabio", "Guga", "Freytes", "Thiago Silva", "Rene", "Hercules", "Martinelli", "Nonato", "Canobbio", "Serna", "Everaldo"},
         // Fortaleza
-        {"João Ricardo", "Tinga", "Brítez", "Cardona", "Bruno Pacheco", "Pol Fernández", "Zé Welison", "Calebe", "Breno Lopes", "Pikachu", "Lucero"},
-        // Grêmio
-        {"Tiago Volpi", "Gustavo Martins", "Noriega", "Kannemann", "Marlon", "Cuéllar", "Dodi", "Arthur", "Alysson", "Cristian Olivera", "Braithwaite"},
+        {"Joao Ricardo", "Tinga", "Britez", "Cardona", "Bruno Pacheco", "Pol Fernandez", "Ze Welison", "Calebe", "Breno Lopes", "Pikachu", "Lucero"},
+        // Gremio
+        {"Tiago Volpi", "Gustavo Martins", "Noriega", "Kannemann", "Marlon", "Cuellar", "Dodi", "Arthur", "Alysson", "Cristian Olivera", "Braithwaite"},
         // Internacional
-        {"Anthoni", "Aguirre", "Vitão", "Victor Gabriel", "Bernabei", "Fernando", "Bruno Henrique", "Alan Patrick", "Wanderson", "Lucca", "Enner Valencia"},
+        {"Anthoni", "Aguirre", "Vitao", "Victor Gabriel", "Bernabei", "Fernando", "Bruno Henrique", "Alan Patrick", "Wanderson", "Lucca", "Enner Valencia"},
         // Juventude
-        {"Jandrei", "Reginaldo", "Abner", "Wilker Ángel", "Marcelo Hermes", "Caíque", "Jadson", "Luis Mandaca", "Gabriel Veron", "Gabriel Taliari", "Ênio"},
+        {"Jandrei", "Reginaldo", "Abner", "Wilker Angel", "Marcelo Hermes", "Caique", "Jadson", "Luis Mandaca", "Gabriel Veron", "Gabriel Taliari", "Enio"},
         // Mirassol
-        {"Walter", "Lucas Ramon", "João Victor", "Jemmes", "Reinaldo", "Neto Moura", "Danielzinho", "Yago Felipe", "Gabriel", "Negueba", "Edson Carioca"},
+        {"Walter", "Lucas Ramon", "Joao Victor", "Jemmes", "Reinaldo", "Neto Moura", "Danielzinho", "Yago Felipe", "Gabriel", "Negueba", "Edson Carioca"},
         // Palmeiras
-        {"Weverton", "Mayke", "Gustavo Gómez", "Murilo", "Piquerez", "Aníbal Moreno", "Zé Rafael", "Raphael Veiga", "Dudu", "Endrick", "Rony"},
+        {"Weverton", "Mayke", "Gustavo Gomez", "Murilo", "Piquerez", "Anibal Moreno", "Ze Rafael", "Raphael Veiga", "Dudu", "Endrick", "Rony"},
         // Red Bull Bragantino
-        {"Cleiton", "Nathan Mendes", "Pedro Henrique", "Luan Cândido", "Juninho Capixaba", "Jadsom", "Eric Ramires", "Lucas Evangelista", "Helinho", "Eduardo Sasha", "Vitinho"},
+        {"Cleiton", "Nathan Mendes", "Pedro Henrique", "Luan Candido", "Juninho Capixaba", "Jadsom", "Eric Ramires", "Lucas Evangelista", "Helinho", "Eduardo Sasha", "Vitinho"},
         // Santos
-        {"Gabriel Brazão", "Mayke", "Adonis Frías", "Luan Peres", "Escobar", "Tomás Rincón", "Zé Rafael", "Neymar", "Caballero", "Guilherme", "Tiquinho Soares"},
-        // São Paulo
-        {"Rafael", "Arboleda", "Alan Franco", "Sabino", "Igor Vinícius", "Luiz Gustavo", "Alisson", "Marcos Antônio", "Wendell", "Luciano", "Calleri"},
+        {"Gabriel Brazao", "Mayke", "Adonis Frias", "Luan Peres", "Escobar", "Tomas Rincon", "Ze Rafael", "Neymar", "Caballero", "Guilherme", "Tiquinho Soares"},
+        // Sao Paulo
+        {"Rafael", "Arboleda", "Alan Franco", "Sabino", "Igor Vinicius", "Luiz Gustavo", "Alisson", "Marcos Antonio", "Wendell", "Luciano", "Calleri"},
         // Sport
-        {"Gabriel", "Matheus Alexandre", "Rafael Thyere", "Ramon", "Aderlan", "Christian Rivera", "Zé Lucas", "Lucas Lima", "Matheusinho", "Léo Pereira", "Derik"},
+        {"Gabriel", "Matheus Alexandre", "Rafael Thyere", "Ramon", "Aderlan", "Christian Rivera", "Ze Lucas", "Lucas Lima", "Matheusinho", "Leo Pereira", "Derik"},
         // Vasco da Gama
-        {"Léo Jardim", "Paulo Henrique", "João Victor", "Maurício Lemos", "Lucas Piton", "Paulinho", "Hugo Moura", "Garré", "Coutinho", "Nulo Moreira", "Vegete"},
-        // Vitória
+        {"Leo Jardim", "Paulo Henrique", "Joao Victor", "Mauricio Lemos", "Lucas Piton", "Paulinho", "Hugo Moura", "Garre", "Coutinho", "Nulo Moreira", "Vegete"},
+        // Vitoria
         {"Lucas Arcanjo", "Claudinho", "Edu", "Wagner Leonardo", "Lucas Esteves", "Willian Oliveira", "Luan", "Matheuzinho", "Osvaldo", "Luiz Adriano", "Janderson"}
     };
 
@@ -98,8 +88,6 @@ char *posicoes[11] = {
     "Atacante",
     "Centroavante"
 };
-
-
 
 typedef struct {
 
@@ -154,9 +142,9 @@ void liberarArvore(arvB *raiz);
 
 // FUNCOES DE IMPRESSAO
 void imprimir_informacoes_basicas(arvB *raiz);
-void imprimir_acima_de_overall(arvB *raiz, int overall);
-void imprimir_atletas_por_posicao(arvB *raiz, char posicao[]);
-void imprimir_atletas_por_clube(arvB *raiz, char clube[]);
+void imprimir_acima_de_overall(arvB *raiz, int overall, int nivel);
+void imprimir_atletas_por_posicao(arvB *raiz, char posicao[], int nivel);
+void imprimir_atletas_por_clube(arvB *raiz, char clube[], int nivel);
 void imprimir_jogador_por_id(arvB* raiz, int id_buscado);
 void imprimir_jogador(Registro* regs);
 
@@ -177,6 +165,9 @@ arvB* carregarOuCriarArvore();
 
 // FUNCAO PARA CONTROLE DE ID
 int encontrarMaiorID(arvB *raiz);
+
+void imprimir_clubes();
+void imprimir_posicoes();
 
 
 #endif

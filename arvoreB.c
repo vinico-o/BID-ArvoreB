@@ -28,7 +28,14 @@ void liberarArvore(arvB *raiz)
 }
 void aleatorizarInformacoes(Registro *r)
 {
+    int pos_clube = (rand() % 20);
+    int pos_posicao = (rand() % 11);
+
     r->infos = malloc(sizeof(BID));
+
+    r->cpf = rand() % 1000000;
+    strcpy(r->infos->clube, timesSerieA[pos_clube]);
+    strcpy(r->nome, titulares[pos_clube][pos_posicao]);
 
     r->infos->isLesionado = rand() % 2;
     r->infos->pernaBoa = rand() % 2;
@@ -41,8 +48,7 @@ void aleatorizarInformacoes(Registro *r)
     r->infos->finalizacao = rand() % 70 + 30;
     r->infos->overall = (r->infos->finta + r->infos->pace + r->infos->pas + r->infos->fisico + r->infos->finalizacao) / 5;
 
-    strcpy(r->infos->clube, timesSerieA[rand() % 20]);
-    strcpy(r->infos->posicao, posicoes[rand() % 11]);
+    strcpy(r->infos->posicao, posicoes[pos_posicao]);
 }
 
 Registro* criarJogador()
@@ -52,8 +58,6 @@ Registro* criarJogador()
     reg->id = id;
     id++;
 
-    reg->cpf = rand() % 1000000;
-    strcpy(reg->nome, titulares[rand() % 20][rand() % 11]);
     aleatorizarInformacoes(reg);
     printf("JOGADOR INSERIDO COM SUCESSO!");
     imprimir_jogador(reg);
@@ -405,90 +409,143 @@ arvB* insereArvoreB(arvB *r, Registro *k)  // função de inserir
     }
 }
 
+void imprimir_no_recursivo(arvB *no, int nivel)
+{
+    if (no == NULL)
+    {
+        return;
+    }
+
+    for (int i = 0; i < nivel; i++)
+    {
+        printf("    "); //espacos por nivel
+    }
+
+    printf("[");
+    for (int i = 0; i < no->n; i++)
+    {
+        printf("id: %d nome: %s", no->regs[i]->id, no->regs[i]->nome);
+        if (i < no->n - 1)
+        {
+            printf(" | ");
+        }
+    }
+    printf("]\n");
+
+    for (int i = 0; i < no->n + 1; i++)
+    {
+        imprimir_no_recursivo(no->filho[i], nivel + 1);
+    }
+}
+
 void imprimir_informacoes_basicas(arvB *raiz)
 {
-    if (raiz != NULL)
+    if (raiz == NULL)
     {
-        printf ("\n\n|");
-        for (int i = 0; i < raiz->n; i++)
-        {
-            printf (" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
-        }
-
-        printf ("|");
-
-        for (int i = 0; i < raiz->n + 1; i++)
-        {
-            imprimir_informacoes_basicas (raiz->filho[i]);
-        }
+        printf("A arvore está vazia.\n");
+        return;
     }
+    printf("\n--- JOGADORES REGISTRADOS ---\n");
+    imprimir_no_recursivo(raiz, 0);
+    printf("\n\n");
 }
 
-void imprimir_acima_de_overall(arvB *raiz, int overall)
+void imprimir_acima_de_overall(arvB *raiz, int overall, int nivel)
 {
-    if (raiz != NULL)
+    if (raiz == NULL)
     {
-        printf ("\n\n|");
-        for (int i = 0; i < raiz->n; i++)
-        {
-            if(raiz->regs[i]->infos->overall >= overall)
-            {
-                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
-            }
-        }
+        return;
+    }
 
-        printf ("|");
+    for (int i = 0; i < nivel; i++)
+    {
+        printf("    "); // indentação por nível
+    }
 
-        for (int i = 0; i < raiz->n + 1; i++)
+    printf("[");
+    int encontrado = 0; // para controlar se algum atleta foi exibido
+    for (int i = 0; i < raiz->n; i++)
+    {
+        if (raiz->regs[i]->infos->overall >= overall)
         {
-            imprimir_acima_de_overall(raiz->filho[i], overall);
+            if (encontrado)
+                printf(" | ");
+            printf("id: %d nome: %s", raiz->regs[i]->id, raiz->regs[i]->nome);
+            encontrado = 1;
         }
+    }
+    printf("]\n");
+
+    for (int i = 0; i < raiz->n + 1; i++)
+    {
+        imprimir_acima_de_overall(raiz->filho[i], overall, nivel + 1);
     }
 }
 
-void imprimir_atletas_por_posicao(arvB *raiz, char posicao[])
+void imprimir_atletas_por_posicao(arvB* raiz, char posicao[], int nivel)
 {
-    if (raiz != NULL)
+    if (raiz == NULL)
     {
-        printf ("\n\n|");
-        for (int i = 0; i < raiz->n; i++)
-        {
-            if(strcmp(raiz->regs[i]->infos->posicao, posicao) == 0)
-            {
-                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
-            }
-        }
+        return;
+    }
 
-        printf ("|");
+    for (int i = 0; i < nivel; i++)
+    {
+        printf("    "); // indentação por nível
+    }
 
-        for (int i = 0; i < raiz->n + 1; i++)
+    printf("[");
+    int encontrado = 0; // para controlar se algum atleta foi exibido
+    for (int i = 0; i < raiz->n; i++)
+    {
+        if (strcmp(raiz->regs[i]->infos->posicao, posicao) == 0)
         {
-            imprimir_atletas_por_posicao(raiz->filho[i], posicao);
+            if (encontrado)
+                printf(" | ");
+            printf("id: %d nome: %s", raiz->regs[i]->id, raiz->regs[i]->nome);
+            encontrado = 1;
         }
+    }
+    printf("]\n");
+
+    for (int i = 0; i < raiz->n + 1; i++)
+    {
+        imprimir_atletas_por_posicao(raiz->filho[i], posicao, nivel + 1);
     }
 }
 
-void imprimir_atletas_por_clube(arvB *raiz, char clube[])
+void imprimir_atletas_por_clube(arvB *raiz, char clube[], int nivel)
 {
-    if (raiz != NULL)
+    if (raiz == NULL)
     {
-        printf ("\n\n|");
-        for (int i = 0; i < raiz->n; i++)
-        {
-            if(strcmp(raiz->regs[i]->infos->clube, clube) == 0)
-            {
-                printf(" [id: %d nome: %s]", raiz->regs[i]->id, raiz->regs[i]->nome);
-            }
-        }
+        return;
+    }
 
-        printf ("|");
+    for (int i = 0; i < nivel; i++)
+    {
+        printf("    "); // indentação por nível
+    }
 
-        for (int i = 0; i < raiz->n + 1; i++)
+    printf("[");
+    int encontrado = 0;
+    for (int i = 0; i < raiz->n; i++)
+    {
+        if (strcmp(raiz->regs[i]->infos->clube, clube) == 0)
         {
-            imprimir_atletas_por_clube (raiz->filho[i], clube);
+            if (encontrado)
+                printf(" | ");
+            printf("id: %d nome: %s", raiz->regs[i]->id, raiz->regs[i]->nome);
+            encontrado = 1;
         }
     }
+    printf("]\n");
+
+    for (int i = 0; i < raiz->n + 1; i++)
+    {
+        imprimir_atletas_por_clube(raiz->filho[i], clube, nivel + 1);
+    }
 }
+
 
 void mergeChildArvoreB (arvB *x, int i) // função merge
 {
@@ -766,12 +823,10 @@ void remover_rec (arvB *x, int k) // a remoção usará os casos acima + funçã
                 else {
                     mergeChildArvoreB (x, i-1);
                 }
-                
 
             }
 
         }
-
 
         remover_rec(filhoAlvo, k);
     }
@@ -852,30 +907,54 @@ void imprimir_jogador_por_id(arvB* raiz, int id_buscado)
 void imprimir_jogador(Registro* regs)
 {
     printf("\n+---------------------------------------+\n");
-    printf("|          INFORMAÇÕES DO ATLETA        |\n");
+    printf("|          INFORMACOES DO ATLETA        |\n");
     printf("+---------------------------------------+\n");
     printf("| %-12s | %-22d |\n", "ID", regs->id);
     printf("| %-12s | %-22d |\n", "CPF", regs->cpf);
     printf("| %-12s | %-22s |\n", "Nome", regs->nome);
     printf("| %-12s | %-22s |\n", "Clube", regs->infos->clube);
-    printf("| %-12s | %-22s |\n", "Posição", regs->infos->posicao);
+    printf("| %-12s | %-22s |\n", "Posicao", regs->infos->posicao);
     printf("+---------------------------------------+\n");
-    printf("|             STATUS FÍSICO             |\n");
+    printf("|             STATUS FISICO             |\n");
     printf("+---------------------------------------+\n");
-    printf("| %-12s | %-22s |\n", "Lesionado", regs->infos->isLesionado ? "Sim" : "Não");
+    printf("| %-12s | %-22s |\n", "Lesionado", regs->infos->isLesionado ? "Sim" : "Nao");
     printf("| %-12s | %-22s |\n", "Perna Boa", regs->infos->pernaBoa ? "Esquerda" : "Direita");
     printf("+---------------------------------------+\n");
     printf("|              ATRIBUTOS                |\n");
     printf("+------------------+--------------------+\n");
-    printf("| %-12s | %-3d %-16s |\n", "Ritmo", regs->infos->pace, "");
-    printf("| %-12s | %-3d %-16s |\n", "Finalização", regs->infos->finalizacao, "");
-    printf("| %-12s | %-3d %-16s |\n", "Passe", regs->infos->pas, "");
-    printf("| %-12s | %-3d %-16s |\n", "Finta", regs->infos->finta, "");
-    printf("| %-12s | %-3d %-16s |\n", "Defesa", regs->infos->defesa, "");
-    printf("| %-12s | %-3d %-16s |\n", "Físico", regs->infos->fisico, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Ritmo", regs->infos->pace, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Finalizacao", regs->infos->finalizacao, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Passe", regs->infos->pas, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Finta", regs->infos->finta, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Defesa", regs->infos->defesa, "");
+    printf("| %-12s | %-3d %-16s   |\n", "Fisico", regs->infos->fisico, "");
     printf("+------------------+--------------------+\n");
     printf("| %-12s | %-22d |\n", "OVERALL", regs->infos->overall);
     printf("+---------------------------------------+\n\n");
     
     printf ("\n");
+}
+
+void imprimir_clubes()
+{
+    printf("\n--- Times do Brasileirao Serie A ---\n\n");
+
+    for (int i = 0; i < 20; i += 2)
+    {
+        printf("%-20s    %-20s\n", timesSerieA[i], timesSerieA[i + 1]);
+    }
+
+    printf("\n");
+}
+
+void imprimir_posicoes()
+{
+    printf("\n--- Posicoes dos Jogadores ---\n\n");
+
+    printf("Goleiro             Lateral Direito\n");
+    printf("Zagueiro            Lateral Esquerdo\n");
+    printf("Volante             Meia\n");
+    printf("Atacante            Centroavante\n");
+
+    printf("\n");
 }

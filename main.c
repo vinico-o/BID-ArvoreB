@@ -9,10 +9,13 @@ int main ()
 
     setlocale(LC_ALL, "Portuguese");
 
-    printf ("\nBEM VINDO AO BANCO DE DADOS DOS JOGADORES");
+    printf("\nBEM VINDO AO BANCO DE DADOS DOS JOGADORES");
+    printf("\nSISTEMA FEITO POR: CAUAN SIMOES, FELIPE ZANARDI, IGOR ROMERO E VINICIUS MARDEGAN");
+    printf("\nSE NAO EXISTIR UMA ARVORE, ELA SERA CRIADA.");
+    printf("\nSE A ARVORE JA EXISTIR, INFORME O MESMO INDICE T DELA!");
 
-    printf ("\nInforme o t: ");
-    scanf ("%d", &t);
+    printf("\nInforme o t: ");
+    scanf("%d", &t);
 
     if (t < 2)
     {
@@ -60,24 +63,26 @@ int main ()
                 break;
 
             case 5:
-                printf("Digite o nome do Clube: ");
+                imprimir_clubes();
+                printf("Digite o nome do Clube desejado: ");
                 scanf("%s", clube_buscado);
                 fflush(stdin);
-                imprimir_atletas_por_clube(raiz, clube_buscado);
+                imprimir_atletas_por_clube(raiz, clube_buscado, 0);
                 break;
 
             case 6:
-                printf("Digite a Posicao: ");
+                imprimir_posicoes();
+                printf("Digite a Posicao desejada: ");
                 scanf("%s", posicao_buscada);
                 fflush(stdin);
-                imprimir_atletas_por_posicao(raiz, posicao_buscada);
+                imprimir_atletas_por_posicao(raiz, posicao_buscada, 0);
                 break;
 
             case 7:
                 printf("Digite o OVERALL minimo: ");
                 scanf("%d", &overall_buscado);
                 fflush(stdin);
-                imprimir_acima_de_overall(raiz, overall_buscado);
+                imprimir_acima_de_overall(raiz, overall_buscado, 0);
                 break;
 
             case 10:
